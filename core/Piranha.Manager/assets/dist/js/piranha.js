@@ -26267,6 +26267,7 @@ $(document).ready(function() {
 piranha.postpicker = new Vue({
     el: "#postpicker",
     data: {
+        loading: true,
         search: '',
         sites: [],
         archives: [],
@@ -26280,9 +26281,11 @@ piranha.postpicker = new Vue({
     },
     computed: {
         filteredPosts: function () {
+            var self = this;
+
             return this.posts.filter(function (post) {
-                if (piranha.postpicker.search.length > 0) {
-                    return post.title.toLowerCase().indexOf(piranha.postpicker.search.toLowerCase()) > -1
+                if (self.search.length > 0) {
+                    return post.title.toLowerCase().indexOf(self.search.toLowerCase()) > -1
                 }
                 return true;
             });
@@ -26290,6 +26293,7 @@ piranha.postpicker = new Vue({
     },
     methods: {
         load: function (siteId, archiveId) {
+            var self = this;
             var url = piranha.baseUrl + "manager/api/post/modal";
 
             if (siteId) {
@@ -26302,15 +26306,28 @@ piranha.postpicker = new Vue({
             fetch(url)
                 .then(function (response) { return response.json(); })
                 .then(function (result) {
-                    piranha.postpicker.sites = result.sites;
-                    piranha.postpicker.archives = result.archives;
-                    piranha.postpicker.posts = result.posts;
+                    self.sites = result.sites;
+                    self.archives = result.archives;
+                    self.posts = result.posts;
 
-                    piranha.postpicker.currentSiteId = result.siteId;
-                    piranha.postpicker.currentArchiveId = result.archiveId;
+                    self.currentSiteId = result.siteId;
+                    self.currentArchiveId = result.archiveId;
 
-                    piranha.postpicker.currentSiteTitle = result.siteTitle;
-                    piranha.postpicker.currentArchiveTitle = result.archiveTitle;
+                    self.currentSiteTitle = result.siteTitle;
+                    self.currentArchiveTitle = result.archiveTitle;
+
+                    Vue.nextTick(function () {
+                        $("#postpicker-site").select2({
+                            selectOnClose: true,
+                            dropdownParent: $("#postpicker"),
+                            templateSelection: self.formatSiteState
+                        });
+                        $("#postpicker-archive").select2({
+                            selectOnClose: true,
+                            dropdownParent: $("#postpicker"),
+                            templateSelection: self.formatArchiveState
+                        });
+                    });
                 })
                 .catch(function (error) { console.log("error:", error ); });
         },
@@ -26336,7 +26353,52 @@ piranha.postpicker = new Vue({
             this.search = "";
 
             $("#postpicker").modal("hide");
+        },
+        formatSiteState: function (state) {
+            if (!state.id) {
+                return state.text;
+            }
+            var $state = $("<span><i class='fas fa-globe mr-2'></i><span></span></span>");
+            $state.find("span").text(state.text);
+
+            return $state;
+        },
+        formatArchiveState: function (state) {
+            if (!state.id) {
+                return state.text;
+            }
+            var $state = $("<span><i class='fas fa-font mr-2'></i><span></span></span>");
+            $state.find("span").text(state.text);
+
+            return $state;
         }
+    },
+    updated: function () {
+        var self = this;
+
+        if (this.loading)
+        {
+            // Initialize select 2
+            $("#postpicker-site").select2({
+                selectOnClose: true,
+                dropdownParent: $("#postpicker"),
+                templateSelection: self.formatSiteState
+            });
+            $("#postpicker-archive").select2({
+                selectOnClose: true,
+                dropdownParent: $("#postpicker"),
+                templateSelection: self.formatArchiveState
+            });
+
+            // We need to manually bind select2 to the Vue model variable
+            $("#postpicker-site").on("change", function() {
+                self.load($(this).find("option:selected").val());
+            });
+            $("#postpicker-archive").on("change", function() {
+                self.load(self.currentSiteId, $(this).find("option:selected").val());
+            });
+        }
+        this.loading = false;
     }
 });
 
