@@ -24,5 +24,8 @@ namespace MvcWeb.Models
         /// </summary>
         [Region()]
         public Regions.Hero Hero { get; set; }        
+
+        [Region(Display = RegionDisplayMode.Content)]
+        public Regions.Author Author {get; set;}
     }
 }

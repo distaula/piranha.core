@@ -242,7 +242,7 @@ public static class ManagerModuleExtensions
             })
             .AddViewLocalization()
             .AddDataAnnotationsLocalization()
-            .AddJsonOptions(options =>
+            .AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.TypeNameHandling = TypeNameHandling.Auto;
             });
