@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <Version>7.0.2</Version>
+    <Version>7.0.4</Version>
     <Company>Piranha CMS</Company>
   </PropertyGroup>
 

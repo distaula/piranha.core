@@ -2,15 +2,30 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Piranha;
-using Piranha.AspNetCore.Identity.SQLite;
+using Piranha.AspNetCore.Identity.SQLServer;
 
 namespace RazorWeb
 {
     public class Startup
     {
+        /// <summary>
+        /// The application config.
+        /// </summary>
+        public IConfiguration Configuration { get; set; }
+
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+        /// <param name="configuration">The current configuration</param>
+        public Startup(IConfiguration configuration) {
+            Configuration = configuration;
+        }
+
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
@@ -19,6 +34,7 @@ namespace RazorWeb
                 options.ResourcesPath = "Resources"
             );
             services.AddMvc()
+                .AddMvcOptions(options => options.EnableEndpointRouting = false)
                 .AddPiranhaManagerOptions()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
@@ -30,16 +46,16 @@ namespace RazorWeb
             services.AddPiranhaApi();
 
             services.AddPiranhaEF(options =>
-                options.UseSqlite("Filename=./piranha.razorweb.db"));
-            services.AddPiranhaIdentityWithSeed<IdentitySQLiteDb>(options =>
-                options.UseSqlite("Filename=./piranha.razorweb.db"));
+                options.UseSqlServer(Configuration.GetConnectionString("piranha")));
+            services.AddPiranhaIdentityWithSeed<IdentitySQLServerDb>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("piranha")));
 
             services.AddMemoryCache();
             services.AddPiranhaMemoryCache();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApi api)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApi api)
         {
             if (env.IsDevelopment())
             {

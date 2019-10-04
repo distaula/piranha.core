@@ -15,6 +15,9 @@
   <data name="Add site" xml:space="preserve">
     <value>Agregar sitio</value>
   </data>
+  <data name="Are you really sure?" xml:space="preserve">
+    <value>¿Está seguro?</value>
+  </data>
   <data name="Edit site" xml:space="preserve">
     <value>Editar sitio</value>
   </data>
@@ -23,5 +26,11 @@
   </data>
   <data name="If this should be the default site of the installation." xml:space="preserve">
     <value>Este debería ser el sitio por defecto de la instalación.</value>
+  </data>
+  <data name="Please type in the name of the site to confirm." xml:space="preserve">
+    <value>Por favor, escriba el nombre del sitio para confirmar.</value>
+  </data>
+  <data name="ConfirmDelete" xml:space="preserve">
+    <value>Está acción &lt;strong>no se puede&lt;/strong> deshacer. Se borrará permanentemente el sitio {{ title }} y todas sus &lt;strong>páginas&lt;/strong>, &lt;strong>archivos&lt;/strong> y &lt;strong>posts&lt;/strong>.</value>
   </data>
 </root>

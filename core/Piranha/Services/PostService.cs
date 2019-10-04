@@ -207,6 +207,17 @@ namespace Piranha.Services
         }
 
         /// <summary>
+        /// Gets the id of all posts that have a draft for
+        /// the specified blog.
+        /// </summary>
+        /// <param name="blogId">The unique blog id</param>
+        /// <returns>The posts that have a draft</returns>
+        public Task<IEnumerable<Guid>> GetAllDraftsAsync(Guid blogId)
+        {
+            return _repo.GetAllDrafts(blogId);
+        }
+
+        /// <summary>
         /// Gets the post model with the specified id.
         /// </summary>
         /// <param name="id">The unique id</param>
@@ -382,7 +393,7 @@ namespace Piranha.Services
         /// <returns>The model</returns>
         public async Task<Taxonomy> GetCategoryByIdAsync(Guid id)
         {
-            Taxonomy model = _cache.Get<Taxonomy>(id.ToString());
+            Taxonomy model = _cache?.Get<Taxonomy>(id.ToString());
 
             if (model == null)
             {
@@ -432,7 +443,7 @@ namespace Piranha.Services
         /// <returns>The model</returns>
         public async Task<Taxonomy> GetTagByIdAsync(Guid id)
         {
-            Taxonomy model = _cache.Get<Taxonomy>(id.ToString());
+            Taxonomy model = _cache?.Get<Taxonomy>(id.ToString());
 
             if (model == null)
             {

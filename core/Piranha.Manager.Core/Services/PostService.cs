@@ -114,6 +114,9 @@ namespace Piranha.Manager.Services
 
         public async Task<PostListModel> GetList(Guid archiveId)
         {
+            var page = await _api.Pages.GetByIdAsync<PageInfo>(archiveId);
+            var pageType = App.PageTypes.GetById(page.TypeId);
+
             var model = new PostListModel
             {
                 PostTypes = App.PostTypes.Select(t => new PostListModel.PostTypeItem
@@ -124,6 +127,18 @@ namespace Piranha.Manager.Services
                 }).ToList()
             };
 
+            // We have specified the post types that should be available
+            // in this archive. Filter them accordingly
+            if (pageType.ArchiveItemTypes.Count > 0)
+            {
+                model.PostTypes = model.PostTypes
+                    .Where(t => pageType.ArchiveItemTypes.Contains(t.Id))
+                    .ToList();
+            }
+
+            // Get drafts
+            var drafts = await _api.Posts.GetAllDraftsAsync(archiveId);
+
             // Get posts
             model.Posts = (await _api.Posts.GetAllAsync<PostInfo>(archiveId))
                 .Select(p => new PostListModel.PostItem
@@ -133,7 +148,7 @@ namespace Piranha.Manager.Services
                     TypeName = model.PostTypes.First(t => t.Id == p.TypeId).Title,
                     Category = p.Category.Title,
                     Published = p.Published.HasValue ? p.Published.Value.ToString("yyyy-MM-dd HH:mm") : null,
-                    Status = GetState(p, false),
+                    Status = GetState(p, drafts.Contains(p.Id)),
                     isScheduled = p.Published.HasValue && p.Published.Value > DateTime.Now,
                     EditUrl = "manager/post/edit/"
                 }).ToList();
@@ -361,6 +376,7 @@ namespace Piranha.Manager.Services
 
         private PostEditModel Transform(DynamicPost post, bool isDraft)
         {
+            var config = new Config(_api);
             var type = App.PostTypes.GetById(post.TypeId);
 
             var model = new PostEditModel
@@ -424,6 +440,14 @@ namespace Piranha.Manager.Services
                             }
                         };
 
+                        if (typeof(Extend.Fields.SelectFieldBase).IsAssignableFrom(appFieldType.Type))
+                        {
+                            foreach(var item in ((Extend.Fields.SelectFieldBase)Activator.CreateInstance(appFieldType.Type)).Items)
+                            {
+                                field.Meta.Options.Add(Convert.ToInt32(item.Value), item.Title);
+                            }
+                        }
+
                         if (regionType.Fields.Count > 1)
                         {
                             field.Model = (Extend.IField)((IDictionary<string, object>)regionModel)[fieldType.Id];
@@ -468,7 +492,8 @@ namespace Piranha.Manager.Services
                             Name = blockType.Name,
                             Icon = blockType.Icon,
                             Component = "block-group",
-                            IsGroup = true
+                            IsGroup = true,
+                            isCollapsed = config.ManagerDefaultCollapsedBlocks
                         }
                     };
 
@@ -528,7 +553,8 @@ namespace Piranha.Manager.Services
                             Name = blockType.Name,
                             Title = block.GetTitle(),
                             Icon = blockType.Icon,
-                            Component = blockType.Component
+                            Component = blockType.Component,
+                            isCollapsed = config.ManagerDefaultCollapsedBlocks
                         }
                     });
                 }
