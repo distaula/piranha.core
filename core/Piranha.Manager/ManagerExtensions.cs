@@ -47,7 +47,7 @@ public static class ManagerModuleExtensions
         services.AddSession();
 
         // Add SignalR
-        services.AddSignalR();
+        services.AddSignalR().AddJsonProtocol();
 
         // Setup authorization policies
         services.AddAuthorization(o => {
@@ -227,11 +227,9 @@ public static class ManagerModuleExtensions
 
         return builder
             .UseSession()
-            .UseSignalR(routes =>
-            {
-                routes.MapHub<PreviewHub>("/manager/preview");
-            });
-            //.UseEndpoints(routeBuilder => routeBuilder.MapHub<PreviewHub>("/manager/preview"));
+            .UseSignalR(routeBuilder => routeBuilder.MapHub<PreviewHub>("/manager/preview"));
+            //.UseEndpoints(endpoints => endpoints.MapHub<PreviewHub>("/manager/preview"));
+        //.UseEndpoints(routeBuilder => routeBuilder.MapHub<PreviewHub>("/manager/preview"));
 
     }
 
@@ -239,11 +237,9 @@ public static class ManagerModuleExtensions
     {
         return builder
             .AddRazorPagesOptions(options => {
-                options.Conventions.AuthorizeAreaFolder("Manager", "/");
-                options.Conventions.AllowAnonymousToAreaPage("Manager", "/login");
+                options.Conventions.AuthorizeAreaFolder("Manager", "/").AllowAnonymousToAreaPage("Manager", "/login");
             })
             .AddRazorRuntimeCompilation()
-            .AddMvcOptions(options => { options.EnableEndpointRouting = false; })
             .AddViewLocalization()
             .AddDataAnnotationsLocalization()
             .AddNewtonsoftJson(options =>

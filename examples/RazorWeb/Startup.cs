@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Piranha;
 using Piranha.AspNetCore.Identity.SQLServer;
+using Piranha.Manager.Hubs;
 
 namespace RazorWeb
 {
@@ -33,9 +34,10 @@ namespace RazorWeb
             services.AddLocalization(options =>
                 options.ResourcesPath = "Resources"
             );
-            services.AddMvc(options => options.EnableEndpointRouting = false)
-                .AddPiranhaManagerOptions()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc()
+                .AddNewtonsoftJson()
+                .AddRazorRuntimeCompilation()
+                .AddPiranhaManagerOptions();
 
             services.AddPiranha();
             services.AddPiranhaApplication();
@@ -60,6 +62,10 @@ namespace RazorWeb
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseStaticFiles();
+            app.UseRouting();
+
 
             App.Init(api);
 
@@ -95,35 +101,37 @@ namespace RazorWeb
              */
 
             // Register middleware
-            app.UseStaticFiles();
-
-            //app.UseRouting();
 
             app.UseAuthentication();
+            app.UseAuthorization();
             app.UsePiranha();
-
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapRazorPages();
-            //    //endpoints.MapAreaControllerRoute("manager", "Manager", "{area:exists}/{controller}/{action}/{id?}");
-            //    endpoints.MapControllerRoute("areaRoute", "{area:exists}/{controller}/{action}/{id?}", new {controller = "Home", action = "Index"});
-            //    endpoints.MapDefaultControllerRoute();
-            //});
-
             app.UsePiranhaManager();
 
-
-
-            app.UseMvc(routes =>
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(name: "areaRoute",
-                    template: "{area:exists}/{controller}/{action}/{id?}",
-                    defaults: new { controller = "Home", action = "Index" });
+                
+                //endpoints.MapAreaControllerRoute("manager", "manager", "{area:exists}/{controller}/{action}/{id?}");
 
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=home}/{action=index}/{id?}");
+                endpoints.MapControllerRoute("areaRoute", "{area:exists}/{controller}/{action}/{id?}", new { controller = "Home", action = "Index" });
+                endpoints.MapControllerRoute("default", "{controller=home}/{action=index}/{id?}");
+                //endpoints.MapFallbackToController("index", "home");
+                //endpoints.MapDefaultControllerRoute();
+
+                endpoints.MapRazorPages();
+                //endpoints.MapHub<PreviewHub>("/manager/preview");
+
             });
+            //Microsoft.AspNetCore.Routing.RouteEndpoint
+            //app.UseMvc(routes =>
+            //{
+            //    routes.MapRoute(name: "areaRoute",
+            //        template: "{area:exists}/{controller}/{action}/{id?}",
+            //        defaults: new { controller = "Home", action = "Index" });
+
+            //    routes.MapRoute(
+            //        name: "default",
+            //        template: "{controller=home}/{action=index}/{id?}");
+            //});
 
             Seed.RunAsync(api).GetAwaiter().GetResult();
         }
