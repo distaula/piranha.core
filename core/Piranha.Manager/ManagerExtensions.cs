@@ -231,6 +231,8 @@ public static class ManagerModuleExtensions
             {
                 routes.MapHub<PreviewHub>("/manager/preview");
             });
+            //.UseEndpoints(routeBuilder => routeBuilder.MapHub<PreviewHub>("/manager/preview"));
+
     }
 
     public static IMvcBuilder AddPiranhaManagerOptions(this IMvcBuilder builder)
@@ -240,6 +242,8 @@ public static class ManagerModuleExtensions
                 options.Conventions.AuthorizeAreaFolder("Manager", "/");
                 options.Conventions.AllowAnonymousToAreaPage("Manager", "/login");
             })
+            .AddRazorRuntimeCompilation()
+            .AddMvcOptions(options => { options.EnableEndpointRouting = false; })
             .AddViewLocalization()
             .AddDataAnnotationsLocalization()
             .AddNewtonsoftJson(options =>

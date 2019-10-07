@@ -33,8 +33,7 @@ namespace RazorWeb
             services.AddLocalization(options =>
                 options.ResourcesPath = "Resources"
             );
-            services.AddMvc()
-                .AddMvcOptions(options => options.EnableEndpointRouting = false)
+            services.AddMvc(options => options.EnableEndpointRouting = false)
                 .AddPiranhaManagerOptions()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
@@ -97,9 +96,24 @@ namespace RazorWeb
 
             // Register middleware
             app.UseStaticFiles();
+
+            //app.UseRouting();
+
             app.UseAuthentication();
             app.UsePiranha();
+
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    endpoints.MapRazorPages();
+            //    //endpoints.MapAreaControllerRoute("manager", "Manager", "{area:exists}/{controller}/{action}/{id?}");
+            //    endpoints.MapControllerRoute("areaRoute", "{area:exists}/{controller}/{action}/{id?}", new {controller = "Home", action = "Index"});
+            //    endpoints.MapDefaultControllerRoute();
+            //});
+
             app.UsePiranhaManager();
+
+
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(name: "areaRoute",
