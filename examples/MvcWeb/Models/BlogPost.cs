@@ -3,12 +3,13 @@
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
- * 
+ *
  * http://github.com/tidyui/coreweb
- * 
+ *
  */
 
 using Piranha.AttributeBuilder;
+using Piranha.Extend;
 using Piranha.Models;
 
 namespace MvcWeb.Models
@@ -23,7 +24,7 @@ namespace MvcWeb.Models
         /// Gets/sets the heading.
         /// </summary>
         [Region()]
-        public Regions.Hero Hero { get; set; }        
+        public Regions.Hero Hero { get; set; }
 
         [Region(Display = RegionDisplayMode.Content)]
         public Regions.Author Author {get; set;}
