@@ -1,0 +1,41 @@
+﻿@page "/page/{Id:guid}"
+@page "/page"
+@page "/pagewide/{Id:guid}"
+@page "/pagewide"
+@inherits BlazorWeb.Pages.PiranhaComponentBase<BlazorWeb.Models.StandardPage>
+@using Microsoft.AspNetCore.Authorization;
+@using Piranha.AspNetCore.Models;
+@using Piranha.AspNetCore.Services;
+@using Microsoft.EntityFrameworkCore;
+@using Piranha;
+@*@Html.DisplayFor(m => m.Hero)*@
+
+<HeroComponent Hero="@Model?.Hero" />
+
+<div class="container body-container wide">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-xs-12">
+            @if (Model != null)
+            {
+                foreach (var block in Model.Blocks)
+                {
+                    <div>>block.GetTitle();</div>
+                }
+            }
+
+            @*@Html.DisplayFor(m => m.Data.Blocks)*@
+        </div>
+    </div>
+</div>
+
+@*<partial name="Partial/Quotes" for="Data.Quotes" />*@
+
+@code {
+    private Hero hero;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Model = await GetModel();
+        this.StateHasChanged();
+    }
+}

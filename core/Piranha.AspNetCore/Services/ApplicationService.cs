@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components;
 using Piranha.Extend.Fields;
 using Piranha.Models;
 
@@ -183,6 +184,51 @@ namespace Piranha.AspNetCore.Services
 
             // Get the current url
             Url = context.Request.Path.Value;
+        }
+
+        /// <summary>
+        /// Initializes the service.
+        /// </summary>
+        public async Task InitAsync(Uri uri)
+        {
+            // Gets the current site info
+
+            if (!uri.LocalPath.StartsWith("/manager/"))
+            {
+                Site site = null;
+                string contextUrl = uri.ToString();
+                // Try to get the requested site by hostname & prefix
+                var url = uri.LocalPath ?? "";
+                if (!string.IsNullOrEmpty(url) && url.Length > 1)
+                {
+                    var segments = url.Substring(1).Split(new char[] { '/' });
+                    site = await Api.Sites.GetByHostnameAsync($"{uri.Host}/{segments[0]}");
+
+                    if (site != null)
+                        contextUrl = "/" + string.Join("/", segments.Skip(1));
+                }
+
+                // Try to get the requested site by hostname
+                if (site == null)
+                    site = await Api.Sites.GetByHostnameAsync(uri.Host);
+
+                // If we didn't find the site, get the default site
+                if (site == null)
+                    site = await Api.Sites.GetDefaultAsync();
+
+                // Store the current site id & get the sitemap
+                if (site != null)
+                {
+                    Site.Id = site.Id;
+                    Site.Culture = site.Culture;
+                    Site.Sitemap = await Api.Sites.GetSitemapAsync(Site.Id);
+                }
+
+                uri = new Uri(contextUrl);
+            }
+
+            // Get the current url
+            Url = uri.LocalPath;
         }
     }
 }

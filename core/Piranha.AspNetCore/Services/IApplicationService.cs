@@ -10,6 +10,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Http;
 using Piranha.Models;
 
@@ -46,5 +47,10 @@ namespace Piranha.AspNetCore.Services
         /// Initializes the service.
         /// </summary>
         Task InitAsync(HttpContext context);
+
+        /// <summary>
+        /// Initializes the service.
+        /// </summary>
+        Task InitAsync(Uri uri);
     }
 }

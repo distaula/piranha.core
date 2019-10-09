@@ -1,0 +1,39 @@
+﻿@inherits LayoutComponentBase
+
+<header role="banner">
+    <div class="menu">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm">
+                    <NavMenu />
+                    @*<partial name="Partial/_Menu.cshtml" />*@
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="main-body">
+
+    @Body
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm">
+                    Copyright &copy; 2018 Piranha CMS | <a href="https://twitter.com/piranhacms">@@piranhacms</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
+
+@code
+{
+    protected override async Task OnInitializedAsync()
+    {
+        
+    }
+
+    
+}
