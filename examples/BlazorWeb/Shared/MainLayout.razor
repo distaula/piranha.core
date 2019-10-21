@@ -5,7 +5,10 @@
         <div class="container">
             <div class="row">
                 <div class="col-sm">
-                    <NavMenu />
+                    <CascadingValue Value="@Slug">
+                        <NavMenu />
+                    </CascadingValue>
+                    
                     @*<partial name="Partial/_Menu.cshtml" />*@
                 </div>
             </div>
@@ -14,26 +17,30 @@
 </header>
 
 <div class="main-body">
-
-    @Body
-
-    <footer>
-        <div class="container">
-            <div class="row">
-                <div class="col-sm">
-                    Copyright &copy; 2018 Piranha CMS | <a href="https://twitter.com/piranhacms">@@piranhacms</a>
+    <CascadingValue Value="@Slug">
+        @Body
+    </CascadingValue>
+        <footer>
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm">
+                        Copyright &copy; 2018 Piranha CMS | <a href="https://twitter.com/piranhacms">@@piranhacms</a>
+                    </div>
                 </div>
             </div>
-        </div>
-    </footer>
+        </footer>
 </div>
 
 @code
 {
+    [Parameter]
+    public string Slug { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
-        
+        //_content = await GetContent();
+        this.StateHasChanged();
     }
 
-    
+
 }

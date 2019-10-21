@@ -1,0 +1,186 @@
+﻿@page "/"
+@page "/{slug}"
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using System.Threading.Tasks;
+@using Microsoft.AspNetCore.Components;
+@using Microsoft.AspNetCore.Components.Authorization;
+@using Piranha;
+@using Piranha.AspNetCore.Services;
+@using Piranha.Models;
+@using Piranha.Web;
+@inject IApi Api
+@inject IModelLoader ModelLoader
+@inject IApplicationService AppService
+@inject AuthenticationStateProvider AuthenticationState
+@inject NavigationManager NavigationManager
+
+    <CascadingValue Value="@Slug">
+        <CascadingValue Value="@Id">
+            @switch (routedContent)
+            {
+                case Models.TeaserPage teaser:
+                    <TeaserPage Model=@teaser/>
+                    break;
+                case Models.StandardPage standardpage when _route == "page":
+                    <Page Model="@standardpage" />
+                    break;
+
+                case Models.StandardPage standardpage when _route == "pagewide":
+                    <PageWide Model="@standardpage" />
+                    break;
+            }
+
+            <TeaserPage />
+        </CascadingValue>
+    </CascadingValue>
+
+
+@code{
+    //private Site _site;
+
+    //protected async Task<Site> GetSite(Guid? guid = null)
+    //{
+    //    if (_site == null && !guid.HasValue)
+    //    {
+    //        _site = await Api.Sites.GetDefaultAsync();
+    //    }
+
+    //    if (_site == null || guid.HasValue && guid.Value == _site.Id)
+    //    {
+    //        _site = await Api.Sites.GetByIdAsync(guid.GetValueOrDefault());
+    //    }
+
+    //    return _site;
+    //}
+
+    //protected RenderFragment<TType> _fragment;
+
+    private IRouteResponse response;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var site = await Api.Sites.GetDefaultAsync();
+
+        response = await PageRouter.InvokeAsync(Api, $"/{Slug}", site.Id)
+        ?? await PostRouter.InvokeAsync(Api, $"/{Slug}", site.Id)
+        ?? await ArchiveRouter.InvokeAsync(Api, $"/{Slug}", site.Id)
+        ?? await AliasRouter.InvokeAsync(Api, $"/{Slug}", site.Id);
+
+        Id = response.PageId;
+
+        await SetContent();
+
+    }
+
+    private async Task SetContent()
+    {
+        var state = await AuthenticationState.GetAuthenticationStateAsync();
+
+        _route = response.Route.TrimStart('/');
+
+        switch(_route)
+        {
+            case string teaser when _route.Equals(nameof(TeaserPage), StringComparison.InvariantCultureIgnoreCase):
+                routedContent = await ModelLoader.GetPage<Models.TeaserPage>(response.PageId, state.User);
+                break;
+            case string page when _route.Equals(nameof(Page), StringComparison.InvariantCultureIgnoreCase):
+                routedContent = await ModelLoader.GetPage<Models.StandardPage>(response.PageId, state.User);
+                break;
+            case string pagewide when _route.Equals(nameof(PageWide), StringComparison.InvariantCultureIgnoreCase):
+                routedContent = await ModelLoader.GetPage<Models.StandardPage>(response.PageId, state.User);
+              break;
+
+            //case string post when _route.Equals(nameof(Post), StringComparison.InvariantCultureIgnoreCase):
+            //    routedContent = await ModelLoader.GetPage<T>(response.PageId, state.User, draft);
+
+            //    break;
+            default:
+                routedContent = null;
+                break;
+        }
+
+    }
+
+    [Parameter]
+    public string Slug {
+        get;
+        set;
+    }
+
+    [Parameter]
+    public Guid Id { get; set; }
+
+    //[Parameter]
+    //public BlazorWeb.Models.TeaserPage TeaserPage { get; set; }
+
+    //[Parameter]
+    //public BlazorWeb.Models.StandardPage Page { get; set; }
+
+    //[Parameter]
+    //public BlazorWeb.Models.StandardPage PageWide { get; set; }
+
+    //[Parameter]
+    //public BlazorWeb.Models.BlogArchive Archive { get; set; }
+
+    //[Parameter]
+    //public RenderFragment Content { get; set; }
+
+    //[Parameter]
+    //public BlazorWeb.Models.TeaserPage TeaserModel { get; set; }
+
+    //[Parameter]
+    //public BlazorWeb.Models.BlogPost BlogModel { get; set; }
+
+    //[Parameter]
+    //public BlazorWeb.Models.StandardPage PageModel { get; set; }
+
+    //[Parameter]
+    //public BlazorWeb.Models.BlogArchive ArchiveModel { get; set; }
+
+    private string _route;
+
+    private RoutedContent routedContent;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Slug = Slug ?? "home";
+
+        //if (Site == null || guid.HasValue && guid.Value == Site.Id)
+        //{
+        //    Site = await Api.Sites.GetByIdAsync(guid.GetValueOrDefault());
+        //}
+
+
+
+        //Content = await GetContent();
+        //this.StateHasChanged();
+        //var response = await PageRouter.InvokeAsync(Api, $"/{Slug}", _site.Id)
+        //?? await PostRouter.InvokeAsync(Api, $"/{Slug}", _site.Id)
+        //?? await ArchiveRouter.InvokeAsync(Api, $"/{Slug}", _site.Id)
+        //?? await AliasRouter.InvokeAsync(Api, $"/{Slug}", _site.Id);
+
+        ////var render
+        ////Id = response.PageId;
+        //var state = await AuthenticationState.GetAuthenticationStateAsync();
+
+        //switch (response)
+        //{
+
+        //}
+        //var model = await ModelLoader.GetPage<BlazorWeb.Models.TeaserPage>(response.PageId, state.User, false);
+        //_fragment = value => async builder =>
+        //{
+        //    builder.OpenComponent<TeaserPage>(0);
+        //    builder.AddAttribute(1, "Model", model);
+        //    builder.CloseComponent();
+        //};
+
+        //return content;
+
+
+
+        //_fragment = await GetContent<BlazorWeb.Models.TeaserPage>();
+    }
+}

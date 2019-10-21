@@ -1,4 +1,3 @@
-@page "/"
 @page "/teaserpage"
 @page "/teaserpage/{Id:guid}"
 @inherits BlazorWeb.Pages.PiranhaComponentBase<BlazorWeb.Models.TeaserPage>
@@ -11,6 +10,7 @@
 @*@Html.DisplayFor(m => m.Hero)*@
 
 <HeroComponent Hero="@Model?.Hero" />
+
 
 @if (Model?.LatestPost != null)
 {
@@ -39,9 +39,25 @@
 @*<partial name="Partial/Quotes" for="Data.Quotes" />*@
 
 @code {
+
     protected override async Task OnInitializedAsync()
     {
-        Model = await GetModel();
-        this.StateHasChanged();
+        //Model = await GetModel();
+
+        if (Model != null && Model.IsStartPage)
+        {
+            var latest = await _db.Posts
+            .Where(p => p.Published <= DateTime.Now)
+            .OrderByDescending(p => p.Published)
+            .Take(1)
+            .Select(p => p.Id)
+            .ToListAsync();
+
+            if (latest.Count() > 0)
+            {
+                Model.LatestPost = await Api.Posts
+                .GetByIdAsync<PostInfo>(latest.First());
+            }
+        }
     }
 }

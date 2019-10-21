@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -22,30 +23,71 @@ namespace BlazorWeb.Pages
         [Inject]
         protected NavigationManager NavigationManager { get; set; }
 
+        private Site _site;
+
+        protected async Task<Site> GetSite(Guid? guid = null)
+        {
+            
+                if (_site == null || guid.HasValue && guid.Value == _site.Id)
+                {
+                    _site = await Api.Sites.GetByIdAsync(guid.GetValueOrDefault());
+                }
+
+                return _site;
+        }
+
         /// <summary>
         /// Gets/sets the model data.
         /// </summary>
         [Parameter]
-        public T Model { get; set; }
+        public T Model
+        {
+            get; 
+            set;
+        }
 
         [Parameter]
-        public Guid Id { get; set; }
+        public Guid Id
+        {
+            get;
+            set;
+        }
 
-       /// <summary>
+        private string _slug;
+        [CascadingParameter]
+        public string Slug
+        {
+            get
+            {                
+                return _slug;
+            }
+            set
+            {
+                _slug = value;
+            }
+        }
+
+        protected override async Task OnParametersSetAsync()
+        {
+            //Model = await GetModel();
+        }
+
+        /// <summary>
         /// Gets the model data.
         /// </summary>
         /// <param name="id">The requested model id</param>
         /// <param name="draft">If the draft should be fetched</param>
-        public virtual async Task<T> GetModel(bool draft = false)
-        {
-            var defaultSite = await Api.Sites.GetDefaultAsync();
-            var response = await PageRouter.InvokeAsync(Api, new Uri(NavigationManager.Uri).LocalPath, defaultSite.Id);
+        //public virtual async Task<T> GetModel(bool draft = false)
+        //{
+        //    var defaultSite = await Api.Sites.GetDefaultAsync();
 
-            Id = response.PageId;
+        //    var response = await PageRouter.InvokeAsync(Api, $"/{Slug}", defaultSite.Id);
 
-            var state = await AuthenticationState.GetAuthenticationStateAsync();
+        //    Id = response.PageId;
 
-            return await ModelLoader.GetPage<T>(response.PageId, state.User, draft);
-        }
+        //    var state = await AuthenticationState.GetAuthenticationStateAsync();
+
+        //    return await ModelLoader.GetPage<T>(response.PageId, state.User, draft);
+        //}
     }
 }
