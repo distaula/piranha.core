@@ -42,6 +42,8 @@ namespace RazorWeb
             services.AddPiranhaFileStorage();
             services.AddPiranhaImageSharp();
             services.AddPiranhaManager();
+            services.AddPiranhaSummernote();
+            //services.AddPiranhaTinyMCE();
             services.AddPiranhaApi();
 
             services.AddPiranhaEF(options =>
@@ -97,10 +99,12 @@ namespace RazorWeb
             // Register middleware
             app.UseStaticFiles();
             app.UseAuthentication();
-            app.UseAuthorization();
             app.UsePiranha();
             app.UsePiranhaManager();
+            app.UsePiranhaSummernote();
+            //app.UsePiranhaTinyMCE();
             app.UseRouting();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

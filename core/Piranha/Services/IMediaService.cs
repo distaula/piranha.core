@@ -10,6 +10,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Piranha.Models;
 
@@ -22,7 +24,14 @@ namespace Piranha.Services
         /// </summary>
         /// <param name="folderId">The optional folder id</param>
         /// <returns>The available media</returns>
-        Task<IEnumerable<Media>> GetAllAsync(Guid? folderId = null);
+        Task<IEnumerable<Media>> GetAllByFolderIdAsync(Guid? folderId = null);
+
+        /// <summary>
+        /// Get the amount of media available in the specified folder.
+        /// </summary>
+        /// <param name="folderId">The optional folder id</param>
+        /// <returns>The quantity of media items present.</returns>
+        Task<int> CountFolderItemsAsync(Guid? folderId = null);
 
         /// <summary>
         /// Gets all media folders available in the specified
@@ -38,6 +47,13 @@ namespace Piranha.Services
         /// <param name="id">The unique id</param>
         /// <returns>The media</returns>
         Task<Media> GetByIdAsync(Guid id);
+
+        /// <summary>
+        /// Gets the media with the given id.
+        /// </summary>
+        /// <param name="ids">The unique id</param>
+        /// <returns>The media</returns>
+        Task<IEnumerable<Media>> GetByIdAsync(params Guid[] ids);
 
         /// <summary>
         /// Gets the media folder with the given id.
@@ -92,6 +108,8 @@ namespace Piranha.Services
         /// <param name="height">The optionally requested height</param>
         /// <returns>The public URL</returns>
         Task<string> EnsureVersionAsync(Guid id, int width, int? height = null);
+
+        Task<string> EnsureVersionAsync(Media media, int width, int? height = null);
 
         /// <summary>
         /// Deletes the media with the given id.

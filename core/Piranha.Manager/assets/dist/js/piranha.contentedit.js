@@ -185,12 +185,13 @@ Vue.component("post-archive", {
         "        <a v-on:click.prevent='selectCategory(category.title)' v-for='category in categories' href='#' class='dropdown-item'>{{ category.title }}</a>" +
         "      </div>" +
         "    </div>" +
-        "    <div class='btn-group float-right'>" +
+        "    <div v-if='postTypes.length > 1 && piranha.permissions.posts.add' class='btn-group float-right'>" +
         "      <button id='addPostGroup' class='btn btn-sm btn-primary btn-labeled dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><i class='fas fa-plus'></i>{{ piranha.resources.texts.add }}</button>" +
         "      <div class='dropdown-menu dropdown-menu-right' aria-labelledby='addPostGroup'>" +
         "        <a class='dropdown-item' :href='piranha.baseUrl + type.addUrl + id + \"/\" + type.id' v-for='type in postTypes'>{{ type.title }}</a>" +
         "      </div>" +
         "    </div>" +
+        "    <a v-if='postTypes.length === 1 && piranha.permissions.posts.add' :href='piranha.baseUrl + postTypes[0].addUrl + id + \"/\" + postTypes[0].id' class='btn btn-sm btn-primary btn-labeled float-right'><i class='fas fa-plus'></i>{{ piranha.resources.texts.add }}</a>" +
         "  </div>" +
         "  <table class='table'>" +
         "    <tbody>" +
@@ -208,7 +209,7 @@ Vue.component("post-archive", {
         "          {{ post.category }}" +
         "        </td>" +
         "        <td class='actions one'>" +
-        "          <a v-on:click.prevent='remove(post.id)' class='danger'><i class='fas fa-trash'></i></a>" +
+        "          <a v-if='piranha.permissions.posts.delete' v-on:click.prevent='remove(post.id)' class='danger'><i class='fas fa-trash'></i></a>" +
         "        </td>" +
         "      </tr>" +
         "    </tbody>" +
@@ -432,18 +433,10 @@ Vue.component("html-block", {
     },
     methods: {
         onBlur: function (e) {
-            this.model.body.value = tinyMCE.activeEditor.getContent();
-
-            // Tell parent that title has been updated
-            var title = this.model.body.value.replace(/(<([^>]+)>)/ig, "");
-            if (title.length > 40) {
-                title = title.substring(0, 40) + "...";
-            }
-
-            this.$emit('update-title', {
-                uid: this.uid,
-                title: title
-            });
+            this.model.body.value = e.target.innerHTML;
+        },
+        onChange: function (data) {
+            this.model.body.value = data;
         }
     },
     computed: {
@@ -452,7 +445,7 @@ Vue.component("html-block", {
         }
     },
     mounted: function () {
-        piranha.editor.addInline(this.uid, this.toolbar);
+        piranha.editor.addInline(this.uid, this.toolbar, this.onChange);
     },
     beforeDestroy: function () {
         piranha.editor.remove(this.uid);
@@ -477,10 +470,16 @@ Vue.component("html-column-block", {
     },
     methods: {
         onBlurCol1: function (e) {
-            this.model.column1.value = tinyMCE.activeEditor.getContent();
+            this.model.column1.value = e.target.innerHTML;
         },
         onBlurCol2: function (e) {
-            this.model.column2.value = tinyMCE.activeEditor.getContent();
+            this.model.column2.value = e.target.innerHTML;
+        },
+        onChangeCol1: function (data) {
+            this.model.column1.value = data;
+        },
+        onChangeCol2: function (data) {
+            this.model.column2.value = data;
         }
     },
     computed: {
@@ -492,8 +491,8 @@ Vue.component("html-column-block", {
         }
     },
     mounted: function () {
-        piranha.editor.addInline(this.uid + 1, this.toolbar);
-        piranha.editor.addInline(this.uid + 2, this.toolbar);
+        piranha.editor.addInline(this.uid + 1, this.toolbar, this.onChangeCol1);
+        piranha.editor.addInline(this.uid + 2, this.toolbar, this.onChangeCol2);
     },
     beforeDestroy: function () {
         piranha.editor.remove(this.uid + 1);
@@ -1032,6 +1031,20 @@ Vue.component("html-field", {
                 uid: this.uid,
                 title: title
             });
+        },
+        onChange: function (data) {
+            this.model.value = data;
+
+            // Tell parent that title has been updated
+            var title = this.model.value.replace(/(<([^>]+)>)/ig, "");
+            if (title.length > 40) {
+                title = title.substring(0, 40) + "...";
+            }
+
+            this.$emit('update-title', {
+                uid: this.uid,
+                title: title
+            });
         }
     },
     computed: {
@@ -1040,7 +1053,7 @@ Vue.component("html-field", {
         }
     },
     mounted: function () {
-        piranha.editor.addInline(this.uid, this.toolbar);
+        piranha.editor.addInline(this.uid, this.toolbar, this.onChange);
     },
     beforeDestroy: function () {
         piranha.editor.remove(this.uid);
