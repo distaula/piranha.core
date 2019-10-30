@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Piranha;
 using Piranha.AspNetCore.Services;
+using Piranha.Extend;
 using Piranha.Models;
 using Piranha.Web;
 

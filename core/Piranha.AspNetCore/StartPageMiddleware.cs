@@ -94,7 +94,7 @@ namespace Piranha.AspNetCore
                         }
                         else
                         {
-                            context.Request.Path = new PathString($"{response.Route}/{response.PageId}");
+                            context.Request.Path = new PathString(response.Route);
 
                             if (context.Request.QueryString.HasValue)
                             {

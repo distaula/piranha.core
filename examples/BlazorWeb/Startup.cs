@@ -44,6 +44,8 @@ namespace BlazorWeb
             services.AddPiranhaFileStorage();
             services.AddPiranhaImageSharp();
             services.AddPiranhaManager();
+            services.AddPiranhaSummernote();
+            //services.AddPiranhaTinyMCE();
             services.AddPiranhaApi();
 
             services.AddPiranhaEF(options =>
@@ -99,10 +101,12 @@ namespace BlazorWeb
             // Register middleware
             app.UseStaticFiles();
             app.UseAuthentication();
-            app.UseAuthorization();
             app.UsePiranha();
             app.UsePiranhaManager();
+            app.UsePiranhaSummernote();
+            //app.UsePiranhaTinyMCE();
             app.UseRouting();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapBlazorHub();
@@ -111,9 +115,7 @@ namespace BlazorWeb
                     pattern: "{controller=Home}/{action=Index}/{id?}");
 
                 endpoints.MapPiranhaManager();
-
                 endpoints.MapFallbackToPage("/_Host");
-
             });
 
             Seed.RunAsync(api).GetAwaiter().GetResult();
