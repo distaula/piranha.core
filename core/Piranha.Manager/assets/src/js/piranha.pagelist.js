@@ -17,15 +17,18 @@ piranha.pagelist = new Vue({
     },
     methods: {
         load: function () {
-            fetch(piranha.baseUrl + "manager/api/page/list")
+            var self = this;
+
+            piranha.permissions.load(function () {
+                fetch(piranha.baseUrl + "manager/api/page/list")
                 .then(function (response) { return response.json(); })
                 .then(function (result) {
-                    piranha.pagelist.sites = result.sites;
-                    piranha.pagelist.pageTypes = result.pageTypes;
-
-                    piranha.pagelist.updateBindings = true;
+                    self.sites = result.sites;
+                    self.pageTypes = result.pageTypes;
+                    self.updateBindings = true;
                 })
                 .catch(function (error) { console.log("error:", error ); });
+            });
         },
         remove: function (id) {
             var self = this;
@@ -50,7 +53,7 @@ piranha.pagelist = new Vue({
                         fetch(piranha.baseUrl + "manager/api/page/move", {
                             method: "post",
                             headers: {
-                                "Content-Type": "application/json",
+                                "Content-Type": "application/json"
                             },
                             body: JSON.stringify({
                                 id: $(e).attr("data-id"),
