@@ -1,0 +1,12 @@
+@inherits ComponentBase
+
+<div class="row block">
+    <div class="col-md">@((MarkupString)HtmlColumnBlock.Column1.Value)</div>
+    <div class="col-md">@((MarkupString)HtmlColumnBlock.Column2.Value)</div>
+</div>
+
+@code
+{
+    [Parameter]
+    public HtmlColumnBlock HtmlColumnBlock {get; set;}
+}

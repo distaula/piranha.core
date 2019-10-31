@@ -1,0 +1,37 @@
+﻿@inherits ComponentBase
+@using System.Diagnostics
+@using Piranha.Extend.Blocks;
+@if (Block != null)
+{
+    @BlockFragment(Block)
+        @*<div>@(block.GetType())</div>*@
+}
+
+@code {
+
+    [Parameter]
+    public Block Block { get; set; }
+
+    public static RenderFragment<Block> BlockFragment = (block) => 
+    @<div>
+    @switch (block)
+        {
+            case HtmlBlock htmlBlock:
+                <HtmlBlockComponent HtmlBlock="@htmlBlock" />
+                break;
+            case HtmlColumnBlock htmlColBlock:
+                <HtmlColumnBlockComponent HtmlColumnBlock="@htmlColBlock" />
+                break;
+            case ColumnBlock colBlock:
+                <ColumnBlockComponent ColumnBlock="colBlock" />
+                break;
+            case SeparatorBlock sepBlock:
+                <SeperatorBlockComponent />
+                break;
+            case ImageBlock imgBlock:
+                <ImageBlockComponent ImageBlock="@imgBlock" />
+
+                break;
+        }
+        </div>;
+    }

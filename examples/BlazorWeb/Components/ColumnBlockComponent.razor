@@ -1,0 +1,18 @@
+@inherits ComponentBase
+
+@if (ColumnBlock != null)
+{
+    <div class="row columns block">
+        @for (var n = 0; n < ColumnBlock.Items.Count; n++)
+        {
+            <div class="col">
+                <BlockComponent Block="@ColumnBlock.Items[n]"/>
+            </div>
+        }
+    </div>
+}
+@code
+{
+    [Parameter]
+    public Piranha.Extend.Blocks.ColumnBlock ColumnBlock {get; set;}
+}

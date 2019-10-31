@@ -1,0 +1,15 @@
+@inherits ComponentBase
+
+@if (this.ImageBlock != null)
+{
+    <div class="block image-block">
+        @* TODO:  Helper to replace the `Url.Content` method *@
+        <img src="@ImageBlock.Body.Media.PublicUrl.Replace("~/", "")">
+    </div>
+}
+
+@code
+{
+    [Parameter]
+    public Piranha.Extend.Blocks.ImageBlock ImageBlock {get; set;}
+}
