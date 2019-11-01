@@ -34,8 +34,6 @@ namespace BlazorWeb.Pages
             return _site;
         }
 
-
-
         [Parameter] public string Slug { get; set; }
         
         private async Task<RenderFragment<TContent>> GetContent<TContent>() where TContent : RoutedContent

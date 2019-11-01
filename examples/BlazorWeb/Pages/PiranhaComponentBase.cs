@@ -13,7 +13,7 @@ using Piranha.Web;
 
 namespace BlazorWeb.Pages
 {
-    public class PiranhaComponentBase<T> : ComponentBase where T : Page<T>
+    public class PiranhaComponentBase<T> : ComponentBase where T : RoutedContent, IBlockModel, IMeta
     {
         [Inject]
         protected IApi Api { get; set; }
@@ -28,7 +28,6 @@ namespace BlazorWeb.Pages
 
         protected async Task<Site> GetSite(Guid? guid = null)
         {
-            
                 if (_site == null || guid.HasValue && guid.Value == _site.Id)
                 {
                     _site = await Api.Sites.GetByIdAsync(guid.GetValueOrDefault());
@@ -54,19 +53,8 @@ namespace BlazorWeb.Pages
             set;
         }
 
-        private string _slug;
         [CascadingParameter]
-        public string Slug
-        {
-            get
-            {                
-                return _slug;
-            }
-            set
-            {
-                _slug = value;
-            }
-        }
+        public string Slug { get; set; }
 
         protected override async Task OnParametersSetAsync()
         {

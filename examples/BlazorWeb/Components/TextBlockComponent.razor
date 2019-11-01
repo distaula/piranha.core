@@ -1,0 +1,11 @@
+@inherits ComponentBase
+
+    <div class="block">
+        @((MarkupString)TextBlock.Body.Value)
+    </div>
+
+@code
+{
+    [Parameter]
+    public TextBlock TextBlock {get; set;}
+}

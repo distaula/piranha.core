@@ -7,10 +7,8 @@
 @using Microsoft.EntityFrameworkCore;
 @using Piranha;
 @inject IDb _db
-@*@Html.DisplayFor(m => m.Hero)*@
 
 <HeroComponent Hero="@Model?.Hero" />
-
 
 @if (Model?.LatestPost != null)
 {
@@ -26,31 +24,28 @@
     </div>
 }
 
-@*<partial name="Partial/Teasers" for="Data.Teasers" />*@
+<TeasersComponent Teasers="@Model?.Teasers" />
 
 <div class="container body-container">
     <div class="row justify-content-center">
         <div class="col-md-10 col-xs-12">
-            @if (Model?.Blocks != null && Model.Blocks.Any())
+            @if (Model?.Blocks != null)
             {
                 foreach (var block in Model.Blocks)
                 {
                     <BlockComponent Block="@block" />
                 }
             }
-            @*@Html.DisplayFor(m => m.Data.Blocks)*@
         </div>
     </div>
 </div>
 
-@*<partial name="Partial/Quotes" for="Data.Quotes" />*@
+<QuotesComponent Quotes="@Model?.Quotes" />
 
 @code {
 
     protected override async Task OnInitializedAsync()
     {
-        //Model = await GetModel();
-
         if (Model != null && Model.IsStartPage)
         {
             var latest = await _db.Posts
@@ -60,10 +55,9 @@
             .Select(p => p.Id)
             .ToListAsync();
 
-            if (latest.Count() > 0)
+            if (latest.Any())
             {
-                Model.LatestPost = await Api.Posts
-                .GetByIdAsync<PostInfo>(latest.First());
+                Model.LatestPost = await Api.Posts.GetByIdAsync<PostInfo>(latest.First());
             }
         }
     }

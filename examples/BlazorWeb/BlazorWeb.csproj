@@ -5,14 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Pages\Features.razor.bak" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Pages\Features.razor.bak" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SQLServer" Version="3.0.0" />
     <PackageReference Include="BlazorStrap" Version="1.0.105" />
     <PackageReference Include="Sotsera.Blazor.Toaster" Version="1.0.0" />

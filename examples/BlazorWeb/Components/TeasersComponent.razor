@@ -1,0 +1,34 @@
+@using Microsoft.AspNetCore.Mvc.Routing
+@inherits ComponentBase
+@inject NavigationManager NavigationManager
+@inject IApplicationService WebApp
+
+@if (Teasers != null && Teasers.Count > 0)
+{
+    <div class="teasers">
+        <div class="container">
+            <div class="row">
+                @foreach (var teaser in Teasers)
+                {
+                    <div class="col-md">
+                        <div class="teaser-body">
+                            <h3>@teaser.Title.Value</h3>
+                            @if (teaser.Image.HasValue)
+                            {
+                                <img src="@NavigationManager.ToAbsoluteUri(WebApp.Media.ResizeImage(teaser.Image, 132).TrimStart('~'))">
+                            }
+
+                            @((MarkupString)teaser.Body.Value)
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@code
+{
+    [Parameter]
+    public IList<Teaser> Teasers { get; set; }
+}

@@ -1,0 +1,12 @@
+@inherits ComponentBase
+<div class="block">
+    <blockquote>
+        @((MarkupString)QuoteBlock.Body.Value)
+    </blockquote>
+</div>
+
+@code
+{
+    [Parameter]
+    public QuoteBlock QuoteBlock {get; set;}
+}

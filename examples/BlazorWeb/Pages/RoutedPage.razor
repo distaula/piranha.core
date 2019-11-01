@@ -1,0 +1,27 @@
+﻿@using System.Reflection.Metadata
+@typeparam TItem
+
+@PageTemplate(Model)
+
+@code {
+
+    [Parameter]
+    public TItem Model { get; set; }
+
+    public RenderFragment<TItem> PageTemplate = model =>
+    {
+        var route = (model as RoutedContent)?.Route.TrimStart('/');
+        switch (model)
+        {
+            case Models.TeaserPage teaser:
+                return @<TeaserPage Model=@teaser/>;
+            case Models.StandardPage standardPage when route == "page":
+                return @<Page Model="@standardPage"/>;
+            case Models.StandardPage standardPage when route == "pagewide":
+                return @<PageWide Model="@standardPage"/>;
+        }
+
+        return null;
+    };
+}
+

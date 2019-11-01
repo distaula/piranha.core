@@ -20,20 +20,6 @@
                     <BlockComponent Block="@block" />
                 }
             }
-
-            @*@Html.DisplayFor(m => m.Data.Blocks)*@
         </div>
     </div>
 </div>
-
-@*<partial name="Partial/Quotes" for="Data.Quotes" />*@
-
-@code {
-    private Hero hero;
-
-    protected override async Task OnInitializedAsync()
-    {
-        //Model = await GetModel();
-        //this.StateHasChanged();
-    }
-}

@@ -1,6 +1,4 @@
 ﻿@inherits ComponentBase
-@using System.Diagnostics
-@using Piranha.Extend.Blocks;
 @if (Block != null)
 {
     @BlockFragment(Block)
@@ -15,23 +13,37 @@
     public static RenderFragment<Block> BlockFragment = (block) => 
     @<div>
     @switch (block)
-        {
-            case HtmlBlock htmlBlock:
-                <HtmlBlockComponent HtmlBlock="@htmlBlock" />
-                break;
-            case HtmlColumnBlock htmlColBlock:
-                <HtmlColumnBlockComponent HtmlColumnBlock="@htmlColBlock" />
-                break;
-            case ColumnBlock colBlock:
-                <ColumnBlockComponent ColumnBlock="colBlock" />
-                break;
-            case SeparatorBlock sepBlock:
-                <SeperatorBlockComponent />
-                break;
-            case ImageBlock imgBlock:
-                <ImageBlockComponent ImageBlock="@imgBlock" />
-
-                break;
+    {
+        case AudioBlock audioBlock:
+            <AudioBlockComponent AudioBlock="@audioBlock" />
+            break;
+        case ColumnBlock colBlock:
+            <ColumnBlockComponent ColumnBlock="colBlock" />
+            break;
+        case HtmlBlock htmlBlock:
+            <HtmlBlockComponent HtmlBlock="@htmlBlock" />
+            break;
+        case HtmlColumnBlock htmlColBlock:
+            <HtmlColumnBlockComponent HtmlColumnBlock="@htmlColBlock" />
+            break;
+        case ImageBlock imgBlock:
+            <ImageBlockComponent ImageBlock="@imgBlock" />
+            break;
+        case ImageGalleryBlock imgGalleryBlock:
+            <ImageGalleryBlockComponent ImageGallery="@imgGalleryBlock" />
+            break;
+        case QuoteBlock quoteBlock:
+            <QuoteBlockComponent QuoteBlock="@quoteBlock" />
+            break;
+        case SeparatorBlock sepBlock:
+            <SeparatorBlockComponent />
+            break;
+        case TextBlock textBlock:
+            <TextBlockComponent TextBlock="@textBlock" />
+            break;
+        case VideoBlock videoBlock:
+            <VideoBlockComponent VideoBlock="@videoBlock" />
+            break;
         }
-        </div>;
+</div>;
     }

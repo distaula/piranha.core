@@ -1,0 +1,16 @@
+@using Microsoft.AspNetCore.Mvc.Routing
+@inherits ComponentBase
+@inject NavigationManager NavigationManager
+
+<div class="block">
+    <audio width="100%" controls>
+        <source src="@NavigationManager.ToAbsoluteUri(AudioBlock.Body)" type="">
+        Your browser does not support the audio tag.
+    </audio>
+</div>
+
+@code
+{
+    [Parameter]
+    public AudioBlock AudioBlock {get; set;}
+}
