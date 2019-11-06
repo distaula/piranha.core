@@ -45,7 +45,7 @@ namespace BlazorWeb.Pages
             get; 
             set;
         }
-
+        
         [Parameter]
         public Guid Id
         {

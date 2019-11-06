@@ -17,8 +17,10 @@
 
     <CascadingValue Value="@Slug">
         <CascadingValue Value="@Id">
-            @PageTemplate(Model)
+            <CascadingValue Value="@Model">
+                @PageTemplate(Model)
                     @*<RoutedPage Model="@Model" />*@
+            </CascadingValue>
         </CascadingValue>
     </CascadingValue>
 
@@ -31,15 +33,15 @@
             switch (model)
             {
                 case Models.TeaserPage teaser:
-                    return @<TeaserPage Model=@teaser/>;
+                    return @<TeaserPage Model=@teaser />;
                 case Models.StandardPage standardPage when route == "page":
-                    return @<Page Model="@standardPage"/>;
+                    return @<Page Model="@standardPage" />;
                 case Models.StandardPage standardPage when route == "pagewide":
-                    return @<PageWide Model="@standardPage"/>;
+                    return @<PageWide Model="@standardPage" />;
                 case Models.BlogArchive blogArchive:
-                    return null; //@<Archive Model="@blogArchive"/>;
+                    return @<Archive Model="@blogArchive" />;
                 case Models.BlogPost blogPost:
-                    return null; //@<Post Model="@blogPost"/>;
+                    return @<Post Model="@blogPost" />;
             }
 
             return null;
@@ -76,7 +78,7 @@
             case string pagewide when _route.Equals(nameof(PageWide), StringComparison.InvariantCultureIgnoreCase):
                 Model = await ModelLoader.GetPage<Models.StandardPage>(response.PageId, state.User);
                 break;
-            case string archive when _route.Equals("archive", StringComparison.InvariantCultureIgnoreCase):
+            case string archive when _route.Equals(nameof(archive), StringComparison.InvariantCultureIgnoreCase):
                 Model = await ModelLoader.GetPage<Models.BlogArchive>(response.PageId, state.User);
                 break;
             case string post when _route.Equals("post", StringComparison.InvariantCultureIgnoreCase):

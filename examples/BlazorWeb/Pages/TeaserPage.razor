@@ -18,7 +18,9 @@
                 Latest news:
                 <strong>@Model.LatestPost.Published.Value.ToString("yyyy-MM-dd")</strong>
                 -
-                <a href="@Model.LatestPost.Permalink">@Model.LatestPost.Title</a>
+                <NavLink href="@Model.LatestPost.Permalink">
+                    @Model.LatestPost.Title
+                </NavLink>
             </div>
         </div>
     </div>

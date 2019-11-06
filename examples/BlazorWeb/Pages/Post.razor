@@ -1,6 +1,7 @@
 @page "/post"
-@*@page "/post/{Slug}"*@
+@page "/post/{Id:guid}"
 @*@page "/post/{Slug}/{Id:guid}"*@
+@using System.Security.Claims
 @using Microsoft.AspNetCore.Authorization;
 @using Piranha.AspNetCore.Models;
 @using Piranha.AspNetCore.Services;
@@ -46,19 +47,34 @@
 
                 @foreach (var block in Model.Blocks)
                 {
-                    <BlockComponent Block="@block"/>
+                    <BlockComponent Block="@block" />
                 }
             </div>
         </div>
     </div>
 }
 @code {
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id != Guid.Empty && Model == null)
+        {
+            //Model = await Api.Pages.GetByIdAsync<Models.BlogArchive>(Id);
+            //Model.Archive = await Api.Archives.GetByIdAsync(Id, Page, Category, Tag, Year, Month); //, page, category, tag, year, month);
+        }
+
+        if (Model != null)
+        {
+          //  Model.Archive = await Api.Archives.GetByIdAsync(Model.Id, Page, Category, Tag, Year, Month);
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        if (Model != null)// && Model.IsStartPage)
+        if (Model == null)// && Model.IsStartPage)
         {
-
+            Guid.TryParse(System.Web.HttpUtility.ParseQueryString(new Uri(NavigationManager.Uri).Query)["id"], out Guid id);
+            Id = id;
+            Model = await ModelLoader.GetPost<BlogPost>(Id, ClaimsPrincipal.Current);
         }
     }
 }

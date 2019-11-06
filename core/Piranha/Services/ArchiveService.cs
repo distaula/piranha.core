@@ -103,7 +103,7 @@ namespace Piranha.Services
                 using (var config = new Config(_paramService))
                 {
                     // No page size provided, get from config
-                    pageSize = config.ArchivePageSize;
+                    // pageSize = config.ArchivePageSize;
 
                     if (!pageSize.HasValue || pageSize == 0)
                     {
