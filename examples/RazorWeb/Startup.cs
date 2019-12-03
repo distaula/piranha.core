@@ -42,8 +42,7 @@ namespace RazorWeb
             services.AddPiranhaFileStorage();
             services.AddPiranhaImageSharp();
             services.AddPiranhaManager();
-            services.AddPiranhaSummernote();
-            //services.AddPiranhaTinyMCE();
+            services.AddPiranhaTinyMCE();
             services.AddPiranhaApi();
 
             services.AddPiranhaEF(options =>
@@ -96,17 +95,17 @@ namespace RazorWeb
             System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
              */
 
-            // Register middleware
+           // Register middleware
             app.UseStaticFiles();
-            app.UseAuthentication();
             app.UsePiranha();
-            app.UsePiranhaManager();
-            app.UsePiranhaSummernote();
-            //app.UsePiranhaTinyMCE();
             app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
-            app.UseEndpoints(endpoints =>
-            {
+            app.UsePiranhaIdentity();
+            app.UsePiranhaManager();
+            app.UsePiranhaTinyMCE();
+            app.UseEndpoints(endpoints =>{
+
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");

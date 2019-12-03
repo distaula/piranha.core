@@ -18,7 +18,7 @@ piranha.pagelist = new Vue({
     methods: {
         load: function () {
             var self = this;
-
+            console.log(piranha.baseUrl + "manager/api/page/list");
             piranha.permissions.load(function () {
                 fetch(piranha.baseUrl + "manager/api/page/list")
                 .then(function (response) { return response.json(); })
@@ -33,14 +33,23 @@ piranha.pagelist = new Vue({
         remove: function (id) {
             var self = this;
 
-            fetch(piranha.baseUrl + "manager/api/page/delete/" + id)
-                .then(function (response) { return response.json(); })
-                .then(function (result) {
-                    piranha.notifications.push(result);
+            piranha.alert.open({
+                title: piranha.resources.texts.delete,
+                body: piranha.resources.texts.deletePageConfirm,
+                confirmCss: "btn-danger",
+                confirmIcon: "fas fa-trash",
+                confirmText: piranha.resources.texts.delete,
+                onConfirm: function () {
+                    fetch(piranha.baseUrl + "manager/api/page/delete/" + id)
+                    .then(function (response) { return response.json(); })
+                    .then(function (result) {
+                        piranha.notifications.push(result);
 
-                    self.load();
-                })
-                .catch(function (error) { console.log("error:", error ); });
+                        self.load();
+                    })
+                    .catch(function (error) { console.log("error:", error ); });
+                }
+            });
         },
         bind: function () {
             var self = this;

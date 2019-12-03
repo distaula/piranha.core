@@ -133,14 +133,23 @@ Vue.component("post-archive", {
         remove: function (postId) {
             var self = this;
 
-            fetch(piranha.baseUrl + "manager/api/post/delete/" + postId)
-                .then(function (response) { return response.json(); })
-                .then(function (result) {
-                    piranha.notifications.push(result);
+            piranha.alert.open({
+                title: piranha.resources.texts.delete,
+                body: piranha.resources.texts.deletePostConfirm,
+                confirmCss: "btn-danger",
+                confirmIcon: "fas fa-trash",
+                confirmText: piranha.resources.texts.delete,
+                onConfirm: function () {
+                    fetch(piranha.baseUrl + "manager/api/post/delete/" + postId)
+                    .then(function (response) { return response.json(); })
+                    .then(function (result) {
+                        piranha.notifications.push(result);
 
-                    self.load();
-                })
-                .catch(function (error) { console.log("error:", error ); });
+                        self.load();
+                    })
+                    .catch(function (error) { console.log("error:", error ); });
+                }
+            });
         },
         first: function () {
             if (this.hasPrev()) {
@@ -428,7 +437,7 @@ Vue.component("block-group-horizontal", {
         "      <i class='fas fa-list'></i>" +
         "    </button>" +
         "  </div>" +
-        "  <div v-if='model.meta.showHeader' class='block-group-header'>" +
+        "  <div v-if='model.meta.showHeader && model.fields.length > 0' class='block-group-header'>" +
         "    <div class='row'>" +
         "      <div class='form-group' :class='{ \"col-sm-6\": field.meta.isHalfWidth, \"col-sm-12\": !field.meta.isHalfWidth }' v-for='field in model.fields'>" +
         "        <label>{{ field.meta.name }}</label>" +
@@ -527,7 +536,7 @@ Vue.component("block-group-vertical", {
         "      <i class='fas fa-list'></i>" +
         "    </button>" +
         "  </div>" +
-        "  <div v-if='model.meta.showHeader' class='block-group-header'>" +
+        "  <div v-if='model.meta.showHeader && model.fields.length > 0' class='block-group-header'>" +
         "    <div class='row'>" +
         "      <div class='form-group' :class='{ \"col-sm-6\": field.meta.isHalfWidth, \"col-sm-12\": !field.meta.isHalfWidth }' v-for='field in model.fields'>" +
         "        <label>{{ field.meta.name }}</label>" +

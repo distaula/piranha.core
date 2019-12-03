@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -27,8 +26,7 @@ namespace MvcWeb
             services.AddPiranhaFileStorage();
             services.AddPiranhaImageSharp();
             services.AddPiranhaManager();
-            services.AddPiranhaSummernote();
-            //services.AddPiranhaTinyMCE();
+            services.AddPiranhaTinyMCE();
             services.AddPiranhaApi();
 
             services.AddPiranhaEF(options =>
@@ -80,13 +78,13 @@ namespace MvcWeb
 
             // Register middleware
             app.UseStaticFiles();
+            app.UsePiranha();
+            app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UsePiranha();
+            app.UsePiranhaIdentity();
             app.UsePiranhaManager();
-            app.UsePiranhaSummernote();
-            //app.UsePiranhaTinyMCE();
-            app.UseRouting();
+            app.UsePiranhaTinyMCE();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
