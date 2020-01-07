@@ -259,3 +259,6 @@ _Pvt_Extensions
 /core/Piranha.Manager.Summernote/assets/dist
 /core/Piranha.Manager.Summernote/assets/dist
 /core/Piranha.Manager/assets/dist
+
+# Rider generated files
+.idea
