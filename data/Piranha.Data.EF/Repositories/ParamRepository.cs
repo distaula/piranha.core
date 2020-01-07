@@ -78,13 +78,10 @@ namespace Piranha.Repositories
         /// </summary>
         /// <param name="key">The unique key</param>
         /// <returns>The model</returns>
-        public async Task<Param> GetByKey(string key) {
-            var p = (await _db.Params
+        public Task<Param> GetByKey(string key) {
+            return _db.Params
                 .AsNoTracking()
-                .ToListAsync())
-                .FirstOrDefault(x => x.Key == key);
-
-                return new Param
+                .Select(p => new Param
                 {
                     Id = p.Id,
                     Key = p.Key,
@@ -92,7 +89,8 @@ namespace Piranha.Repositories
                     Value = p.Value,
                     Created = p.Created,
                     LastModified = p.LastModified
-                };
+                })
+                .FirstOrDefaultAsync(p => p.Key == key);
         }
 
         /// <summary>
