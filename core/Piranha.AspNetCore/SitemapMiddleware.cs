@@ -20,12 +20,18 @@ namespace Piranha.AspNetCore
 {
     public class SitemapMiddleware : MiddlewareBase
     {
+        private readonly PiranhaRouteConfig _config;
+
         /// <summary>
         /// Creates a new middleware instance.
         /// </summary>
         /// <param name="next">The next middleware in the pipeline</param>
         /// <param name="factory">The logger factory</param>
-        public SitemapMiddleware(RequestDelegate next, ILoggerFactory factory = null) : base(next, factory) { }
+        /// <param name="config">The optional route config</param>
+        public SitemapMiddleware(RequestDelegate next, ILoggerFactory factory = null, PiranhaRouteConfig config = null) : base(next, factory)
+        {
+            _config = config;
+        }
 
         /// <summary>
         /// Invokes the middleware.
@@ -35,7 +41,9 @@ namespace Piranha.AspNetCore
         /// <returns>An async task</returns>
         public override async Task Invoke(HttpContext context, IApi api, IApplicationService service)
         {
-            if (!IsHandled(context) && !context.Request.Path.Value.StartsWith("/manager/assets/"))
+            var useSitemapRouting = _config != null ? _config.UseSitemapRouting : true;
+
+            if (useSitemapRouting && !IsHandled(context) && !context.Request.Path.Value.StartsWith("/manager/assets/"))
             {
                 var url = context.Request.Path.HasValue ? context.Request.Path.Value : "";
                 var host = context.Request.Host.Host;
@@ -52,6 +60,13 @@ namespace Piranha.AspNetCore
 
                     // Get the sitemap for the site
                     var pages = await api.Sites.GetSitemapAsync(siteId);
+
+                    if (App.Hooks.OnGenerateSitemap != null)
+                    {
+                        // We need to clone the sitemap as it might be cached
+                        // if we're going to modify it.
+                        pages = App.Hooks.OnGenerateSitemap(Utils.DeepClone(pages));
+                    }
 
                     // Generate sitemap.xml
                     var sitemap = new Sitemap();
