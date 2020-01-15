@@ -6,7 +6,7 @@
 @using Piranha.AspNetCore.Services;
 @using Microsoft.EntityFrameworkCore;
 @using Piranha;
-@inject IDb _db
+
 
 <HeroComponent Hero="@Model?.Hero" />
 
@@ -50,17 +50,19 @@
     {
         if (Model != null && Model.IsStartPage)
         {
-            var latest = await _db.Posts
-            .Where(p => p.Published <= DateTime.Now)
-            .OrderByDescending(p => p.Published)
-            .Take(1)
-            .Select(p => p.Id)
-            .ToListAsync();
-
-            if (latest.Any())
+            using (IDb dataContext = DbFactory())
             {
-                Model.LatestPost = await Api.Posts.GetByIdAsync<PostInfo>(latest.First());
+                var latest = await dataContext.Posts
+                    .OrderByDescending(p => p.Published)
+                    .FirstOrDefaultAsync(post => post.Published <= DateTime.Now);
+
+                if (latest != null)
+                {
+                    Model.LatestPost = await Api.Posts.GetByIdAsync<PostInfo>(latest.Id);
+                }
             }
         }
     }
+
 }
+

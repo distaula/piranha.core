@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BlazorStrap;
+using EFCore.DbContextFactory.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Piranha;
 using Piranha.AspNetCore.Identity.SQLServer;
+using Piranha.AttributeBuilder;
 
 namespace BlazorWeb
 {
@@ -29,35 +31,30 @@ namespace BlazorWeb
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddLocalization(options =>
-                options.ResourcesPath = "Resources"
-            );
-            services.AddControllersWithViews();
-            services.AddRazorPages()
-                .AddPiranhaManagerOptions();
-
             services.AddServerSideBlazor();
-
             services.AddHttpContextAccessor();
-
             services.AddBootstrapCSS();
 
-            services.AddPiranha();
-            services.AddPiranhaApplication();
-            services.AddPiranhaFileStorage();
-            services.AddPiranhaImageSharp();
-            services.AddPiranhaManager();
-            services.AddPiranhaSummernote();
-            //services.AddPiranhaTinyMCE();
-            services.AddPiranhaApi();
+            //
+            // Simplified setup with dependencies
+            //
+            services.AddPiranha(options =>
+            {
+                options.AddRazorRuntimeCompilation = true;
 
-            services.AddPiranhaEF(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("piranha")));
-            services.AddPiranhaIdentityWithSeed<IdentitySQLServerDb>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("piranha")));
+                options.UseFileStorage();
+                options.UseImageSharp();
+                options.UseManager();
+                options.UseTinyMCE();
+                options.UseMemoryCache();
+                options.UseEF(db =>
+                    db.UseSqlServer(Configuration.GetConnectionString("piranha")));
+                options.UseIdentityWithSeed<IdentitySQLServerDb>(db =>
+                    db.UseSqlServer(Configuration.GetConnectionString("piranha")));
+            });
 
-            services.AddMemoryCache();
-            services.AddPiranhaMemoryCache();
+            services.AddSqlServerDbContextFactory<Db>("piranha");
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -74,18 +71,8 @@ namespace BlazorWeb
             App.CacheLevel = Piranha.Cache.CacheLevel.Full;
 
             // Build content types
-            var pageTypeBuilder = new Piranha.AttributeBuilder.PageTypeBuilder(api)
-                .AddType(typeof(Models.BlogArchive))
-                .AddType(typeof(Models.StandardPage))
-                .AddType(typeof(Models.TeaserPage))
-                .Build()
-                .DeleteOrphans();
-            var postTypeBuilder = new Piranha.AttributeBuilder.PostTypeBuilder(api)
-                .AddType(typeof(Models.BlogPost))
-                .Build()
-                .DeleteOrphans();
-            var siteTypeBuilder = new Piranha.AttributeBuilder.SiteTypeBuilder(api)
-                .AddType(typeof(Models.StandardSite))
+            new ContentTypeBuilder(api)
+                .AddAssembly(typeof(Startup).Assembly)
                 .Build()
                 .DeleteOrphans();
 
@@ -101,23 +88,18 @@ namespace BlazorWeb
             System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
              */
 
-            // Register middleware
-            app.UseStaticFiles();
-            app.UseAuthentication();
-            app.UsePiranha();
-            app.UsePiranhaManager();
-            app.UsePiranhaSummernote();
-            //app.UsePiranhaTinyMCE();
-            app.UseRouting();
-            app.UseAuthorization();
+            //
+            // Simplified setup with dependencies
+            //
+            app.UsePiranha(options => {
+                options.UseManager();
+                options.UseTinyMCE();
+                options.UseIdentity();
+            });
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapBlazorHub();
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
-
-                endpoints.MapPiranhaManager();
                 endpoints.MapFallbackToPage("/_Host");
             });
 

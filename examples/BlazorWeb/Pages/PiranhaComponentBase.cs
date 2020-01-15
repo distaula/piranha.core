@@ -23,9 +23,11 @@ namespace BlazorWeb.Pages
         protected AuthenticationStateProvider AuthenticationState { get; set; }
         [Inject]
         protected NavigationManager NavigationManager { get; set; }
+        [Inject]
+        protected Func<Db> DbFactory { get; set; }
 
         private Site _site;
-
+        
         protected async Task<Site> GetSite(Guid? guid = null)
         {
                 if (_site == null || guid.HasValue && guid.Value == _site.Id)
@@ -55,11 +57,6 @@ namespace BlazorWeb.Pages
 
         [CascadingParameter]
         public string Slug { get; set; }
-
-        protected override async Task OnParametersSetAsync()
-        {
-            //Model = await GetModel();
-        }
 
         /// <summary>
         /// Gets the model data.

@@ -144,21 +144,21 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        if (Id != Guid.Empty && Model == null)
-        {
-            Model = await Api.Pages.GetByIdAsync<Models.BlogArchive>(Id);
-            Model.Archive = await Api.Archives.GetByIdAsync(Id, Page, Category, Tag, Year, Month); //, page, category, tag, year, month);
-        }
+        //if (Id != Guid.Empty && Model == null)
+        //{
+        //    Model = await Api.Pages.GetByIdAsync<Models.BlogArchive>(Id);
+        //    Model.Archive = await Api.Archives.GetByIdAsync(Id, Page, Category, Tag, Year, Month); //, page, category, tag, year, month);
+        //}
 
-        if (Model != null)
-        {
-            Model.Archive = await Api.Archives.GetByIdAsync(Model.Id, Page, Category, Tag, Year, Month);
-        }
+        //if (Model != null)
+        //{
+        //    Model.Archive = await Api.Archives.GetByIdAsync(Model.Id, Page, Category, Tag, Year, Month);
+        //}
     }
 
     protected override async Task OnInitializedAsync()
     {
-            //Model = await Api.Pages.GetByIdAsync<Models.BlogArchive>(Id);
+        //Model = await Api.Pages.GetByIdAsync<Models.BlogArchive>(Id);
         if (Model != null)
         {
             Model.Archive = await Api.Archives.GetByIdAsync(Model.Id, Page, Category, Tag, Year, Month);

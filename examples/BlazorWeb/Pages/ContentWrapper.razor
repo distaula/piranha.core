@@ -18,7 +18,8 @@
     <CascadingValue Value="@Slug">
         <CascadingValue Value="@Id">
             <CascadingValue Value="@Model">
-                @PageTemplate(Model)
+                @PiranhaComponentBase.PageTemplate(Model)
+                @*@PageTemplate(Model)*@
                     @*<RoutedPage Model="@Model" />*@
             </CascadingValue>
         </CascadingValue>
@@ -27,7 +28,7 @@
 
 @code{
     
-    protected RenderFragment<RoutedContent> PageTemplate = (model) =>
+    @*protected RenderFragment<RoutedContent> PageTemplate = (model) =>
         {
             var route = (model as RoutedContent)?.Route?.TrimStart('/');
             switch (model)
@@ -45,7 +46,7 @@
             }
 
             return null;
-        };
+        };*@
 
     //private IRouteResponse response;
 
